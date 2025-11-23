@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth";
 import projectsRoutes from "./routes/projects";
 import modelRoutes from "./routes/model";
 import ingestRoutes from "./routes/ingest";
+import filesRoutes from "./routes/files";
 import fs from "fs";
 import path from "path";
 
@@ -21,6 +22,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectsRoutes);
 app.use("/api/model", modelRoutes);
 app.use("/api/ingest", ingestRoutes);
+app.use("/api/files", filesRoutes);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 

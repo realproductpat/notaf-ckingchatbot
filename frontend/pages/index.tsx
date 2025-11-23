@@ -15,8 +15,38 @@ export default function Home() {
 
   useEffect(() => {
     const stored = localStorage.getItem("token");
-    if (stored) setToken(stored);
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+    if (stored) {
+      setToken(stored);
+      // Set up token refresh
+      if (storedRefreshToken) {
+        setupTokenRefresh(storedRefreshToken);
+      }
+    }
   }, []);
+
+  // Setup automatic token refresh
+  function setupTokenRefresh(refreshToken: string) {
+    // Refresh token every 10 minutes (since access token expires in 15 minutes)
+    const interval = setInterval(async () => {
+      try {
+        const res = await apiFetch("/api/auth/refresh", undefined, {
+          method: "POST",
+          body: JSON.stringify({ refreshToken })
+        });
+        setToken(res.token);
+        localStorage.setItem("token", res.token);
+        localStorage.setItem("refreshToken", res.refreshToken);
+        setupTokenRefresh(res.refreshToken); // Update interval with new refresh token
+      } catch (err) {
+        console.error("Token refresh failed:", err);
+        // If refresh fails, logout
+        logout();
+      }
+    }, 10 * 60 * 1000); // 10 minutes
+
+    return () => clearInterval(interval);
+  }
 
   const { data: projects, mutate: refreshProjects } = useSWR(
     token ? ["/api/projects", token] : null,
@@ -41,6 +71,10 @@ export default function Home() {
     });
     setToken(res.token);
     localStorage.setItem("token", res.token);
+    localStorage.setItem("refreshToken", res.refreshToken);
+    if (res.refreshToken) {
+      setupTokenRefresh(res.refreshToken);
+    }
   }
 
   async function createProject() {
@@ -138,9 +172,21 @@ export default function Home() {
     }
   }
 
-  function logout() {
+  async function logout() {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      try {
+        await apiFetch("/api/auth/logout", token || undefined, {
+          method: "POST",
+          body: JSON.stringify({ refreshToken })
+        });
+      } catch (err) {
+        console.error("Logout error:", err);
+      }
+    }
     setToken(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     setProjectId(null);
     setMessages([]);
   }
