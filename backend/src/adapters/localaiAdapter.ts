@@ -57,7 +57,8 @@ export default function localaiAdapter(config: { url: string }): Adapter {
       return;
     }
 
-    const reader = res.body.getReader();
+    // Node-fetch v2 body is a Node.js ReadableStream, not a Web ReadableStream
+    const reader = (res.body as unknown as ReadableStream<Uint8Array>).getReader();
     const decoder = new TextDecoder();
     let buffer = "";
 

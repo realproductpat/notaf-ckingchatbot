@@ -8,12 +8,26 @@ datasource db {
 }
 
 model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String?
+  password      String
+  projects      Project[]
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
+
+  @@map("users")
+}
+
+model RefreshToken {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  password  String
-  projects  Project[]
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  expiresAt DateTime
   createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
 }
 
 model Project {
@@ -47,5 +61,3 @@ model FileMeta {
   projectId Int
   createdAt DateTime @default(now())
 }
-
-@@map("users")

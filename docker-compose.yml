@@ -10,6 +10,11 @@ services:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./backend
@@ -18,10 +23,29 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - db
-      - localai
+      db:
+        condition: service_healthy
+      localai:
+        condition: service_started
     volumes:
       - ./backend/uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    env_file:
+      - ./frontend/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   # Optional LocalAI service for local open-source models (example)
   localai:
@@ -33,6 +57,7 @@ services:
     # Mount local model directory if you have ggml models
     # volumes:
     #   - ./models:/models
+    restart: unless-stopped
 
 volumes:
   db-data:
