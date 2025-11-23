@@ -1,7 +1,7 @@
 import express from "express";
 import prisma from "../db";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import crypto from "crypto";
 import { JWT_SECRET, JWT_REFRESH_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN } from "../config";
 
@@ -21,7 +21,7 @@ function parseExpiration(expiresIn: string): number {
 
 // Helper to generate tokens
 async function generateTokens(userId: number, email: string) {
-  const accessToken = jwt.sign({ id: userId, email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  const accessToken = jwt.sign({ id: userId, email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN as any });
   
   const refreshToken = crypto.randomBytes(64).toString('hex');
   const expiresAt = new Date(Date.now() + parseExpiration(JWT_REFRESH_EXPIRES_IN));
