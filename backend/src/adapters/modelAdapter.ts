@@ -28,7 +28,7 @@ export async function sendText(prompt: string) {
   return JSON.stringify(json);
 }
 
-export function streamProxySSE(req, res) {
+export function streamProxySSE(req: any, res: any) {
   // Basic SSE forwarder: connect to upstream SSE endpoint and stream events to client.
   const upstream = MODEL_PROXY_URL.replace(/\/$/, "") + "/stream";
   const headers = {
@@ -48,7 +48,7 @@ export function streamProxySSE(req, res) {
     }
     res.setHeader("Content-Type", "text/event-stream");
     // pipe chunks to client
-    const reader = uRes.body.getReader();
+    const reader = (uRes.body as any).getReader();
     const decoder = new TextDecoder();
     async function pump() {
       while (true) {

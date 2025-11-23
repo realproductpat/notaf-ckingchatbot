@@ -14,6 +14,8 @@ model User {
   password  String
   projects  Project[]
   createdAt DateTime @default(now())
+
+  @@map("users")
 }
 
 model Project {
@@ -47,5 +49,3 @@ model FileMeta {
   projectId Int
   createdAt DateTime @default(now())
 }
-
-@@map("users")

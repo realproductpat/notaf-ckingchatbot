@@ -57,7 +57,7 @@ export default function localaiAdapter(config: { url: string }): Adapter {
       return;
     }
 
-    const reader = res.body.getReader();
+    const reader = (res.body as any).getReader();
     const decoder = new TextDecoder();
     let buffer = "";
 
