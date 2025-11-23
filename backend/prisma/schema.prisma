@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  projects  Project[]
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id         Int       @id @default(autoincrement())
+  name       String
+  user       User      @relation(fields: [userId], references: [id])
+  userId     Int
+  messages   Message[]
+  files      FileMeta[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  role      String
+  content   String   @db.Text
+  metadata  Json?
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId Int
+  createdAt DateTime @default(now())
+}
+
+model FileMeta {
+  id        Int      @id @default(autoincrement())
+  filename  String
+  path      String
+  size      Int
+  mime      String?
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId Int
+  createdAt DateTime @default(now())
+}
+
+@@map("users")

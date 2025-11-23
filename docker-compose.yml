@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: llmapp
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+      - localai
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  # Optional LocalAI service for local open-source models (example)
+  localai:
+    image: ghcr.io/go-skynet/localai:latest
+    environment:
+      LOKI: "false"
+    ports:
+      - "8080:8080"
+    # Mount local model directory if you have ggml models
+    # volumes:
+    #   - ./models:/models
+
+volumes:
+  db-data:
