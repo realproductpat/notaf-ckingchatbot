@@ -13,3 +13,9 @@ export const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads";
 export const EMBEDDINGS_PROVIDER = (process.env.EMBEDDINGS_PROVIDER || "openai").toLowerCase();
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 export const HF_API_KEY = process.env.HF_API_KEY || "";
+
+// Rate limiting configuration
+export const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000", 10); // 15 minutes
+export const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100", 10);
+export const AUTH_RATE_LIMIT_MAX = parseInt(process.env.AUTH_RATE_LIMIT_MAX || "5", 10);
+export const MODEL_RATE_LIMIT_MAX = parseInt(process.env.MODEL_RATE_LIMIT_MAX || "20", 10);
