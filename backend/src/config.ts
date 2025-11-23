@@ -3,6 +3,14 @@ dotenv.config();
 
 export const PORT = parseInt(process.env.PORT || "4000", 10);
 export const DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/llmapp";
+// Critical security: JWT secrets must be set in production
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET === "change_me") {
+  console.warn("WARNING: JWT_SECRET is not set or using default value. This is INSECURE for production!");
+}
+if (!process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET === "change_me_refresh") {
+  console.warn("WARNING: JWT_REFRESH_SECRET is not set or using default value. This is INSECURE for production!");
+}
+
 export const JWT_SECRET = process.env.JWT_SECRET || "change_me";
 export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "change_me_refresh";
 export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m"; // Access token expiration

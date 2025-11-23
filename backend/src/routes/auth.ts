@@ -7,16 +7,22 @@ import { JWT_SECRET, JWT_REFRESH_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN 
 
 const router = express.Router();
 
+// Constants
+const MINUTES_TO_MS = 60 * 1000;
+const HOURS_TO_MS = 60 * 60 * 1000;
+const DAYS_TO_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_TOKEN_EXPIRATION_MS = 15 * MINUTES_TO_MS;
+
 // Helper to parse expiration time (e.g., "15m", "7d") to milliseconds
 function parseExpiration(expiresIn: string): number {
   const match = expiresIn.match(/^(\d+)([mhd])$/);
-  if (!match) return 15 * 60 * 1000; // default 15 minutes
+  if (!match) return DEFAULT_TOKEN_EXPIRATION_MS;
   const value = parseInt(match[1], 10);
   const unit = match[2];
-  if (unit === 'm') return value * 60 * 1000;
-  if (unit === 'h') return value * 60 * 60 * 1000;
-  if (unit === 'd') return value * 24 * 60 * 60 * 1000;
-  return 15 * 60 * 1000;
+  if (unit === 'm') return value * MINUTES_TO_MS;
+  if (unit === 'h') return value * HOURS_TO_MS;
+  if (unit === 'd') return value * DAYS_TO_MS;
+  return DEFAULT_TOKEN_EXPIRATION_MS;
 }
 
 // Helper to generate tokens

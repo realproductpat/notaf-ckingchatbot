@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { apiFetch } from "../lib/api";
 
+// Constants
+const TOKEN_REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+const SSE_DONE_MESSAGE = "data: [DONE]";
+
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -130,7 +134,7 @@ export default function Home() {
 
         for (const part of parts) {
           const line = part.trim();
-          if (!line || line === "data: [DONE]") continue;
+          if (!line || line === SSE_DONE_MESSAGE) continue;
           
           let delta: string | null = null;
           if (line.startsWith("data:")) {

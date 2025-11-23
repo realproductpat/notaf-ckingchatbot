@@ -48,7 +48,8 @@ export function streamProxySSE(req: any, res: any) {
     }
     res.setHeader("Content-Type", "text/event-stream");
     // pipe chunks to client
-    const reader = (uRes.body as any).getReader();
+    // Node-fetch v2 body is a Node.js ReadableStream, not a Web ReadableStream
+    const reader = (uRes.body as unknown as ReadableStream<Uint8Array>).getReader();
     const decoder = new TextDecoder();
     async function pump() {
       while (true) {
